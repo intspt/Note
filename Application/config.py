@@ -7,10 +7,10 @@ import os
 
 
 
-PWD = os.getcwd()
+PWD = os.path.split(os.path.realpath(__file__))[0]
 
 
-SQLALCHEMY_DATABASE_URI        = 'sqlite:////%s/Application/database/database.db' % PWD
+SQLALCHEMY_DATABASE_URI        = 'sqlite:////%s/database/database.db' % PWD
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 NID_LEN   = 14
