@@ -9,7 +9,3 @@ from Application import app, db, models
 
 db.drop_all()
 db.create_all()
-user = models.User('rikka', 'yuta')
-db.session.add(user)
-db.session.commit()
-db.session.close()
