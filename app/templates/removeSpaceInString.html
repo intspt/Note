@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="GET" action="/removeSpaceInString">
+  <div class="col-xs-10">
+    <input type="text" name="raw_string" class="form-control" style="height:45px">
+  </div>
+  <div class="col-xs-2">
+    <input type="submit" class="btn btn-block btn-lg btn-info" value="转换">
+  </div>
+</form>
+<a class="col-xs-12" style="text-align:center" href={{ result_string }}>
+  {{ result_string }}
+</a>
+{% endblock %}

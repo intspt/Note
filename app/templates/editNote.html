@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+      <form method="POST" action="/editNote">
+        {{ form.csrf_token }}
+        {{ form.nid }}
+        <input type="text" name="title" value={{ form.title.data }} placeholder="标题" class="col-xs-12 form-control">
+        <br /><br />
+        <textarea id="editor" name="content" placeholder="内容" autofocus>{{ form.content.data }}</textarea>
+        <br />
+        <div class="col-xs-3">
+          <input type="submit" class="btn btn-block btn-lg btn-info" value="保存">
+        </div>
+      </form>
+      <script type="text/javascript">
+        var editor = new Simditor({ textarea: $('#editor'), toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', 'color', 'ol', 'ul', 'blockquote', 'code', 'table', 'link', 'image', 'hr', 'indent', 'outdent']});
+      </script>
+{% endblock %}

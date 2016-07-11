@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+      <div class="blog-header">
+        <h1 class="blog-title">江湖人称九月半</h1>
+        <p class="lead blog-description">挖个坑，埋点土，数个一二三四五</p>
+      </div>
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+          {% for note in note_list.items %}
+          <div class="blog-post">
+            <h6 class="blog-post-title"><a href="{{ url_for('note', nid=note.nid) }}">{{ note.title }}</a></h6>
+            {% autoescape false %}
+            <div id="{{ 'content' + note.nid }}" style="max-height: 230px; overflow: hidden">
+              <pre>{{ note.content }}</pre>
+            </div>
+            {% endautoescape %}
+            <br />
+            <div id="{{ 'show' + note.nid }}" class="row" style="display:none">
+              <div class="col-xs-3">
+                <div class="btn btn-block btn-lg btn-inverse">显示全部</div>
+              </div>
+            </div>
+            <div id={{ "hide" + note.nid }} class="row" style="display:none">
+              <div class="col-xs-3">
+                <div class="btn btn-block btn-lg btn-inverse">隐藏</div>
+              </div>
+            </div>
+            <script type="text/javascript">
+            $(function() {
+                if($("{{ '#content' + note.nid }}").find("pre").height() > $("{{ '#content' + note.nid }}").height()) {
+                  $("{{ '#show' + note.nid }}").show();
+                }
+                $("{{ '#show' + note.nid }}").click(function() {
+                  document.getElementById("{{ 'content' + note.nid }}").style.cssText = "";
+                  $("{{ '#show' + note.nid }}").hide();
+                  $("{{ '#hide' + note.nid }}").show();
+                });
+                $("{{ '#hide' + note.nid }}").click(function() {
+                  document.getElementById("{{ 'content' + note.nid }}").style.cssText = "max-height: 230px; overflow: hidden";
+                  $("{{ '#hide' + note.nid }}").hide();
+                  $("{{ '#show' + note.nid }}").show();
+                });
+            })
+            </script>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          <div class="sidebar-module">
+            <h6>标签</h6>
+            <ul>
+              <li>待添加</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="pagination">
+        <ul>
+          {% if note_list.has_prev %}
+            <li class="previous"><a href="{{ url_for('home', pn=note_list.prev().page) }}" class="fui-arrow-left"></a></li>
+          {% else %}
+            <li class="previous"><span class="fui-arrow-left"></span></li>
+          {% endif %}
+          {% for i in note_list.iter_pages() %}
+            {% if pn == i %}
+              <li class="active"><a href="#">{{ i }}</a></li>
+            {% else %}
+              <li><a href="{{ url_for('home', pn=i) }}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if note_list.has_next %}
+            <li class="next"><a href="{{ url_for('home', pn=note_list.next().page) }}" class="fui-arrow-right"></a></li>
+          {% else %}
+            <li class="next"><span class="fui-arrow-right"></span></li>
+          {% endif %}
+        </ul>
+      </div>
+      <script type="text/javascript">
+      $(document).ready(function() {
+          $("pre[class^='lang']").each(function(i, block) {
+              hljs.highlightBlock(block);    
+          });
+      });
+      </script>
+{% endblock %}

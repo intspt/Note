@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="POST" action="/reminder">
+  <div class="col-xs-10">
+    <input type="text" name="content" class="form-control" style="height:45px">
+  </div>
+  <div class="col-xs-2">
+    <input type="submit" class="btn btn-block btn-lg btn-info" value="保存">
+  </div>
+</form>
+<table>
+  {% for reminder in reminder_list %}
+    <div class="col-xs-10" style="{{ loop.cycle('', 'background-color:#D7EBFF') }}">
+      {{ reminder.content }}
+    </div>
+  {% endfor %}
+</table>
+{% endblock %}
