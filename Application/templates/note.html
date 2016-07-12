@@ -6,7 +6,7 @@
           {% autoescape false %}
           <div><pre>{{ note.content }}</pre></div>
           {% endautoescape %}
-          {% if g.user.is_authenticated() %}
+          {% if g.user.is_authenticated %}
           <div class="col-xs-3">
               <input type="button" class="btn btn-block btn-lg btn-info" onclick="window.location.href='{{ url_for('edit_note', nid=note.nid) }}'" value="编辑">
           </div>
