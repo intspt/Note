@@ -24,3 +24,8 @@
   margin-bottom: 5px;
   font-size: 40px;
 }
+.note-content {
+  border: 1px solid #ccc; 
+  padding: 16px; 
+  border-radius: 16px;
+}

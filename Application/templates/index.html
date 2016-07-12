@@ -10,8 +10,8 @@
           <div class="blog-post">
             <h6 class="blog-post-title"><a href="{{ url_for('note', nid=note.nid) }}">{{ note.title }}</a></h6>
             {% autoescape false %}
-            <div id="{{ 'content' + note.nid }}" style="max-height: 230px; overflow: hidden">
-              <pre>{{ note.content }}</pre>
+            <div id="{{ 'content' + note.nid }}" class="note-content" style="max-height: 230px; overflow: hidden">
+              <div>{{ note.content }}</div>
             </div>
             {% endautoescape %}
             <br />
@@ -27,7 +27,7 @@
             </div>
             <script type="text/javascript">
             $(function() {
-                if($("{{ '#content' + note.nid }}").find("pre").height() > $("{{ '#content' + note.nid }}").height()) {
+                if($("{{ '#content' + note.nid }}").find("div").height() > $("{{ '#content' + note.nid }}").height()) {
                   $("{{ '#show' + note.nid }}").show();
                 }
                 $("{{ '#show' + note.nid }}").click(function() {
