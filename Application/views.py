@@ -5,15 +5,12 @@
 from datetime import datetime
 from functools import wraps
 from flask import request, render_template, redirect, url_for, g, flash
-from flask.ext.login import login_user, logout_user, current_user, \
-                            login_required
-
+from flask.ext.login import login_user, logout_user, current_user, login_required
 from sqlalchemy import desc
 from Application import app, db, login_manager
 from models import Note, User, Reminder
 from forms import LoginForm, NoteForm
-from config import EMPTY_ERROR, LOGIN_INFO_ERROR, INDEX_NOTE_NUM, \
-                        CATALOG_NOTE_NUM
+from config import EMPTY_ERROR, LOGIN_INFO_ERROR, INDEX_NOTE_NUM, CATALOG_NOTE_NUM
 
 
 
@@ -50,8 +47,10 @@ def home():
     else:
         pn = int(pn)
 
-    note_list = Note.query.filter_by(is_visible=True).order_by(desc(Note.time_)).paginate(pn, \
-                                                        INDEX_NOTE_NUM)
+    if g.user.is_authenticated:
+        note_list = Note.query.order_by(desc(Note.time_)).paginate(pn, INDEX_NOTE_NUM)
+    else:
+        note_list = Note.query.filter_by(is_visible=True).order_by(desc(Note.time_)).paginate(pn, INDEX_NOTE_NUM)
 
     return render_template('index.html', pn=pn, note_list=note_list)
 
@@ -64,7 +63,7 @@ def about():
 
 
 
-@app.route('/postNote', methods = ['GET', 'POST'])
+@app.route('/postNote', methods=['GET', 'POST'])
 @login_required
 @throw_exception
 def post_note():
@@ -90,19 +89,21 @@ def post_note():
 def note():
     nid = request.args.get('nid')
     note = Note.query.get(nid)
-    return render_template('note.html', note=note)
+    if not note.is_visible and not g.user.is_authenticated:
+        return redirect('/login')
+    else:
+        return render_template('note.html', note=note)
 
 
 
-@app.route('/editNote', methods = ['GET', 'POST'])
+@app.route('/editNote', methods=['GET', 'POST'])
 @login_required
 @throw_exception
 def edit_note():
     if request.method == 'GET':
         nid = request.args.get('nid')
         note = Note.query.get(nid)
-        form = NoteForm(nid=note.nid, title=note.title, \
-                                        content=note.content)
+        form = NoteForm(nid=note.nid, title=note.title,content=note.content)
 
         return render_template('editNote.html', form=form)
     else:
@@ -110,14 +111,25 @@ def edit_note():
         if not form.validate_title() or not form.validate_content():
             raise Exception(EMPTY_ERROR)
 
-        Note.query.filter_by(nid=form.nid.data).update({ \
-                                'title': form.title.data, \
-                                'content': form.content.data, \
-                                'time_': datetime.now()})
+        Note.query.filter_by(nid=form.nid.data).update({'title': form.title.data, \
+                                                      'content': form.content.data, \
+                                                        'time_': datetime.now()})
 
         db.session.commit()
         db.session.close()
         return redirect(url_for('note', nid=form.nid.data))
+
+
+
+@app.route('/displayNote')
+@login_required
+@throw_exception
+def display_note():
+    nid = request.args.get('nid')
+    Note.query.filter_by(nid=nid).update({'is_visible': True})
+    db.session.commit()
+    db.session.close()
+    return redirect('/')
 
 
 
@@ -133,7 +145,20 @@ def hide_note():
 
 
 
-@app.route('/reminder', methods = ['GET', 'POST'])
+@app.route('/deleteNote')
+@login_required
+@throw_exception
+def delete_note():
+    nid = request.args.get('nid')
+    note = Note.query.get(nid)
+    db.session.delete(note)
+    db.session.commit()
+    db.session.close()
+    return redirect('/')
+
+
+
+@app.route('/reminder', methods=['GET', 'POST'])
 @login_required
 @throw_exception
 def reminder():
@@ -150,7 +175,7 @@ def reminder():
 
 
 
-@app.route('/login', methods = ['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 @throw_exception
 def login():
     if request.method == 'GET':
